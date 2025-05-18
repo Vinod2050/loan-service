@@ -19,6 +19,8 @@ public class PropertyDetailsDto {
 
 	@Enumerated(EnumType.STRING)
 	private OwnershipType ownershipType; // e.g., Self-Owned, Joint, Rented
+	
+	private Integer customerId;
 
 	private String propertyAddress;
 
@@ -39,6 +41,9 @@ public class PropertyDetailsDto {
 	@Enumerated(EnumType.STRING)
 	private ConstructionStatus constructionStatus; // e.g., Under Construction, Ready to Move
 
+	private Integer constructionPercentage;
+	
+	
 	private String builderName;
 
 	private String projectName;

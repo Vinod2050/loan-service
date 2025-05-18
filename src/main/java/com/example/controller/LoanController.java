@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dto.ApplyLoanDTO;
+import com.example.dto.DisburseDataDto;
 import com.example.dto.LoanApplicationDto;
 import com.example.entity.LoanApplication;
+import com.example.enums.LoanType;
 import com.example.service.LoanService;
 
 @RestController
@@ -41,23 +44,28 @@ public class LoanController {
 		return ResponseEntity.ok(msg);
 	}
 
-	@PatchMapping("/requirement/{customerId}")
-	public ResponseEntity<String> completeApplication( @PathVariable Integer customerId,@RequestBody LoanApplicationDto loanApplicationDto ) {
+	@PatchMapping("/requirement/{customerId}/{loanType}")
+	public ResponseEntity<String> completeApplication(
+	    @PathVariable Integer customerId,
+	    @PathVariable LoanType loanType,
+	    @RequestBody LoanApplicationDto loanApplicationDto) {
 
-		logger.info("Received loan application: {}", loanApplicationDto);
-
-		String msg = loanService.completeApplication(customerId,loanApplicationDto);
-
-		return ResponseEntity.ok(msg);
+	    logger.info("Received loan application: {}", loanApplicationDto);
+	    String msg = loanService.completeApplication(customerId,loanType, loanApplicationDto);
+	    return ResponseEntity.ok(msg);
 	}
 
-	@PutMapping("/{loanApplicationId}")
-	public ResponseEntity<String> updateLoanApplication(@PathVariable Integer loanApplicationId,
-			@RequestBody LoanApplicationDto loanApplicationDto) {
-		logger.info("Updating loan application with ID: {}", loanApplicationId);
-		String result = loanService.updateLoanApplication(loanApplicationId, loanApplicationDto);
-		return ResponseEntity.ok(result);
+	@PutMapping("/{loanApplicationId}/{loanType}")
+	public ResponseEntity<String> updateLoanApplication(
+	    @PathVariable Integer loanApplicationId,
+	    @PathVariable LoanType loanType,
+	    @RequestBody LoanApplicationDto loanApplicationDto) {
+
+	    logger.info("Updating loan application with ID: {}", loanApplicationId);
+	    String result = loanService.updateLoanApplication(loanApplicationId, loanType,loanApplicationDto);
+	    return ResponseEntity.ok(result);
 	}
+
 
 	@DeleteMapping("/{loanApplicationId}")
 	public ResponseEntity<String> deleteLoanApplication(@PathVariable Integer loanApplicationId) {
@@ -81,6 +89,15 @@ public class LoanController {
 		logger.info("Fetching all loan applications");
 		List<LoanApplication> allLoans = loanService.getAllLoanApplications();
 		return ResponseEntity.ok(allLoans);
+	}
+	@GetMapping("/disburse/{customerId}")
+	public ResponseEntity<DisburseDataDto> getData(@PathVariable Integer customerId)
+	{
+		 DisburseDataDto disburseData = loanService.getDisburseData(customerId);
+		
+		
+		return new ResponseEntity<DisburseDataDto>(disburseData,HttpStatus.OK);
+		
 	}
 
 }

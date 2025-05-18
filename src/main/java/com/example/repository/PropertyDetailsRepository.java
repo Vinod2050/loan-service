@@ -7,6 +7,8 @@ import com.example.entity.PropertyDetails;
 
 public interface PropertyDetailsRepository extends JpaRepository<PropertyDetails,Integer> {
 
+	PropertyDetails findByCustomerId(Integer customerId);
+
 
 
 

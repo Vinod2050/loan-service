@@ -25,6 +25,9 @@ public class PropertyDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer propertyId;
+	
+	private Integer customerId;
+
 
 	@OneToOne
 	private LoanApplication loanApplication;
@@ -53,7 +56,8 @@ public class PropertyDetails {
 
 	@Enumerated(EnumType.STRING)
 	private ConstructionStatus constructionStatus; // e.g., Under Construction, Ready to Move
-
+    private Integer constructionPercentage;
+	
 	private String builderName;
 
 	private String projectName;

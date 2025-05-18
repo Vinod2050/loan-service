@@ -1,5 +1,7 @@
 package com.example.entity;
 
+import java.time.LocalDate;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,11 +18,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GuarantorDetails {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer guarantorId;
+
 	private String guarantorName;
-	private String guarantorDateOfBirth;
+	private LocalDate guarantorDateOfBirth;
 	private String guarantorRelationshipWithCustomer;
 	private Long guarantorMobileNumber;
 	private Long guarantorAdharCardNo;
@@ -28,7 +32,8 @@ public class GuarantorDetails {
 	private String guarantorJobDetails;
 	private String guarantorLocalAddress;
 	private String guarantorPermanentAddress;
-	@OneToOne(cascade = CascadeType.ALL)
-	private LoanApplication loanApplication;
+
+	@OneToOne(cascade = CascadeType.ALL)  
+    private LoanApplication loanApplication;
 
 }
