@@ -26,18 +26,23 @@ public class LoanApplication {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer loanApplicationId;
 	private Integer customerId;
+	private String firstName;
+	private String lastName;
+	private String customerEmail;
 	@Enumerated(EnumType.STRING)
 	private LoanType loanType;
 	private Double requestedAmount;
 	private Integer requestedTenure;
 	private Double  intrestRate;
+	private Double downPaymentAmount;
+	private Double monthlyIncome;
 	private LocalDate applicationDate;
 	@Enumerated(EnumType.STRING)
 	private LoanStatus loanStatus;
     private Integer cibilScore;
     private Boolean IsDocumentVerified ;
     private Boolean IsCustometrVerified;
-    
+
    
 
 

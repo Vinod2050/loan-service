@@ -25,98 +25,99 @@ public class GuarantorDetailsServiceImpl implements GuarantorDetailsService {
 
 	@Override
 	public String addGuarantorDetails(Integer loanApplicationId, GuarantorDetailsDto guarantorDetailsDto) {
+		if (guarantorDetailsDto == null) {
+			return "Invalid request: Guarantor details cannot be null.";
+		}
 
-	    return loanRepository.findById(loanApplicationId).map(loanApplication -> {
+		LoanApplication loanApplication = loanRepository.findById(loanApplicationId).orElse(null);
+		if (loanApplication == null) {
+			return "Loan Application not found for ID: " + loanApplicationId;
+		}
 
-	        GuarantorDetails existingGuarantor = guarantorDetailsRepository.findByLoanApplication(loanApplication);
-
-	        if (existingGuarantor == null) {
-	            GuarantorDetails guarantorDetails = modelmapper.map(guarantorDetailsDto, GuarantorDetails.class);
-	            guarantorDetails.setLoanApplication(loanApplication);
-	            guarantorDetailsRepository.save(guarantorDetails);
-	            return "Guarantor details added successfully for ID: " + loanApplicationId;
-	        } else {
-	            return "Guarantor details already exist for ID: " + loanApplicationId;
-	        }
-
-	    }).orElse("Loan Application not found for ID: " + loanApplicationId);
+		GuarantorDetails existingGuarantor = guarantorDetailsRepository.findByLoanApplication(loanApplication);
+		if (existingGuarantor != null) {
+			// Update existing guarantor
+			existingGuarantor.setGuarantorName(guarantorDetailsDto.getGuarantorName());
+			existingGuarantor.setGuarantorDateOfBirth(guarantorDetailsDto.getGuarantorDateOfBirth());
+			existingGuarantor.setGuarantorRelationshipWithCustomer(guarantorDetailsDto.getGuarantorRelationshipWithCustomer());
+			existingGuarantor.setGuarantorMobileNumber(guarantorDetailsDto.getGuarantorMobileNumber());
+			existingGuarantor.setGuarantorAdharCardNo(guarantorDetailsDto.getGuarantorAdharCardNo());
+			existingGuarantor.setGuarantorMortgageDetails(guarantorDetailsDto.getGuarantorMortgageDetails());
+			existingGuarantor.setGuarantorJobDetails(guarantorDetailsDto.getGuarantorJobDetails());
+			existingGuarantor.setGuarantorLocalAddress(guarantorDetailsDto.getGuarantorLocalAddress());
+			existingGuarantor.setGuarantorPermanentAddress(guarantorDetailsDto.getGuarantorPermanentAddress());
+			// already associated with loanApplication
+			guarantorDetailsRepository.save(existingGuarantor);
+			return "Guarantor details updated successfully for ID: " + loanApplicationId;
+		} else {
+			// Create new guarantor
+			GuarantorDetails newGuarantor = modelmapper.map(guarantorDetailsDto, GuarantorDetails.class);
+			newGuarantor.setLoanApplication(loanApplication);
+			guarantorDetailsRepository.save(newGuarantor);
+			return "Guarantor details added successfully for ID: " + loanApplicationId;
+		}
 	}
 
+	 @Override
+	    public String updateGuarantorDetails(Integer loanApplicationId, GuarantorDetailsDto guarantorDetailsDto) {
+	        if (guarantorDetailsDto == null) {
+	            return "Invalid update data: Guarantor details DTO is null.";
+	        }
+
+	        return loanRepository.findById(loanApplicationId).map(loanApplication -> {
+	            GuarantorDetails guarantorDetails = guarantorDetailsRepository.findByLoanApplication(loanApplication);
+
+	            if (guarantorDetails == null) {
+	                return "Guarantor details do not exist for loan application ID: " + loanApplicationId;
+	            }
+
+	            if (guarantorDetailsDto.getGuarantorAdharCardNo() != null) {
+	                guarantorDetails.setGuarantorAdharCardNo(guarantorDetailsDto.getGuarantorAdharCardNo());
+	            }
+
+	            if (guarantorDetailsDto.getGuarantorDateOfBirth() != null) {
+	                guarantorDetails.setGuarantorDateOfBirth(guarantorDetailsDto.getGuarantorDateOfBirth());
+	            }
+
+	            if (guarantorDetailsDto.getGuarantorJobDetails() != null) {
+	                guarantorDetails.setGuarantorJobDetails(guarantorDetailsDto.getGuarantorJobDetails());
+	            }
+
+	            if (guarantorDetailsDto.getGuarantorLocalAddress() != null) {
+	                guarantorDetails.setGuarantorLocalAddress(guarantorDetailsDto.getGuarantorLocalAddress());
+	            }
+
+	            if (guarantorDetailsDto.getGuarantorMobileNumber() != null) {
+	                guarantorDetails.setGuarantorMobileNumber(guarantorDetailsDto.getGuarantorMobileNumber());
+	            }
+
+	            if (guarantorDetailsDto.getGuarantorMortgageDetails() != null) {
+	                guarantorDetails.setGuarantorMortgageDetails(guarantorDetailsDto.getGuarantorMortgageDetails());
+	            }
+
+	            if (guarantorDetailsDto.getGuarantorName() != null) {
+	                guarantorDetails.setGuarantorName(guarantorDetailsDto.getGuarantorName());
+	            }
+
+	            if (guarantorDetailsDto.getGuarantorPermanentAddress() != null) {
+	                guarantorDetails.setGuarantorPermanentAddress(guarantorDetailsDto.getGuarantorPermanentAddress());
+	            }
+
+	            if (guarantorDetailsDto.getGuarantorRelationshipWithCustomer() != null) {
+	                guarantorDetails.setGuarantorRelationshipWithCustomer(guarantorDetailsDto.getGuarantorRelationshipWithCustomer());
+	            }
+
+	            guarantorDetailsRepository.save(guarantorDetails);
+	            return "Guarantor details updated successfully for loan application ID: " + loanApplicationId;
+
+	        }).orElse("Loan application ID does not exist: " + loanApplicationId);
+	    }
+	
+	
 
 	@Override
 	public GuarantorDetailsDto getGuarantorDetails(Integer loanApplicationId) {
-
-		if (loanRepository.existsById(loanApplicationId)) {
-
-			LoanApplication loanApplication = loanRepository.findById(loanApplicationId).get();
-
-			GuarantorDetails guarantorDetails = guarantorDetailsRepository.findByLoanApplication(loanApplication);
-
-			if (guarantorDetails != null) {
-
-				GuarantorDetailsDto guarantorDetailsDto = modelmapper.map(guarantorDetails, GuarantorDetailsDto.class);
-
-				return guarantorDetailsDto;
-			}
-			return null;
-		}
+		// TODO Auto-generated method stub
 		return null;
-	}
-
-
-
-	@Override
-	public String updateGuarantorDetails(Integer loanApplicationId, GuarantorDetailsDto guarantorDetailsDto) {
-
-		if (loanRepository.existsById(loanApplicationId)) {
-
-			LoanApplication loanApplication = loanRepository.findById(loanApplicationId).get();
-
-			GuarantorDetails guarantorDetails = guarantorDetailsRepository.findByLoanApplication(loanApplication);
-
-			if (guarantorDetails != null && guarantorDetailsDto != null) {
-
-				if (guarantorDetailsDto.getGuarantorAdharCardNo() != null) {
-					guarantorDetails.setGuarantorAdharCardNo(guarantorDetailsDto.getGuarantorAdharCardNo());
-				}
-
-				if (guarantorDetailsDto.getGuarantorDateOfBirth() != null) {
-					guarantorDetails.setGuarantorDateOfBirth(guarantorDetailsDto.getGuarantorDateOfBirth());
-				}
-
-				if (guarantorDetailsDto.getGuarantorJobDetails() != null) {
-					guarantorDetails.setGuarantorJobDetails(guarantorDetailsDto.getGuarantorJobDetails());
-				}
-
-				if (guarantorDetailsDto.getGuarantorLocalAddress() != null) {
-					guarantorDetails.setGuarantorLocalAddress(guarantorDetailsDto.getGuarantorLocalAddress());
-				}
-
-				if (guarantorDetailsDto.getGuarantorMobileNumber() != null) {
-					guarantorDetails.setGuarantorMobileNumber(guarantorDetailsDto.getGuarantorMobileNumber());
-				}
-
-				if (guarantorDetailsDto.getGuarantorMortgageDetails() != null) {
-					guarantorDetails.setGuarantorMortgageDetails(guarantorDetailsDto.getGuarantorMortgageDetails());
-				}
-
-				if (guarantorDetailsDto.getGuarantorName() != null) {
-					guarantorDetails.setGuarantorName(guarantorDetailsDto.getGuarantorName());
-				}
-
-				if (guarantorDetailsDto.getGuarantorPermanentAddress() != null) {
-					guarantorDetails.setGuarantorPermanentAddress(guarantorDetailsDto.getGuarantorPermanentAddress());
-				}
-
-				if (guarantorDetailsDto.getGuarantorRelationshipWithCustomer() != null) {
-					guarantorDetails.setGuarantorRelationshipWithCustomer(
-							guarantorDetailsDto.getGuarantorRelationshipWithCustomer());
-				}
-				guarantorDetailsRepository.save(guarantorDetails);
-				return "Guarantor Details data updated successfully for loan application id : " + loanApplicationId;
-			}
-			return "Either Guarantor details is not exists/update data is not present for loan application id : " + loanApplicationId;
-		}
-		return "loan application id is not exist for loan application id : " + loanApplicationId;
 	}
 }

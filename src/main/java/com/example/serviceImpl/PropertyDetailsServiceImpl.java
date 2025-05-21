@@ -29,23 +29,20 @@ public class PropertyDetailsServiceImpl implements PropertyDetailsService {
 
 	@Override
 	public PropertyDetailsDto savePropertyDetails(PropertyDetailsDto propertyDetailsDto, Integer loanApplicationId) {
-	    
+
 		Optional<LoanApplication> optionalLoanApp = loanRepository.findById(loanApplicationId);
 
 		if (optionalLoanApp.isPresent()) {
-		    LoanApplication loanApp = optionalLoanApp.get();
-		    PropertyDetails propertyDetails = modelMapper.map(propertyDetailsDto, PropertyDetails.class);
-		    propertyDetails.setLoanApplication(loanApp);
-		    PropertyDetails saved = propertyDetailsRepository.save(propertyDetails);
-		    return modelMapper.map(saved, PropertyDetailsDto.class);
+			LoanApplication loanApp = optionalLoanApp.get();
+			PropertyDetails propertyDetails = modelMapper.map(propertyDetailsDto, PropertyDetails.class);
+			propertyDetails.setLoanApplication(loanApp);
+			PropertyDetails saved = propertyDetailsRepository.save(propertyDetails);
+			return modelMapper.map(saved, PropertyDetailsDto.class);
 		} else {
-		    return null;
+			return null;
 		}
 
 	}
-
-
-
 
 	@Override
 	public List<PropertyDetailsDto> getAllPropertyDetails() {
@@ -66,46 +63,90 @@ public class PropertyDetailsServiceImpl implements PropertyDetailsService {
 	}
 
 	@Override
-	public PropertyDetailsDto editPropertyDetails(Integer loanApplicationid, PropertyDetailsDto propertyDetailsDto) {
+	public PropertyDetailsDto editPropertyDetails(Integer loanApplicationId, PropertyDetailsDto propertyDetailsDto) {
 		System.out.println("Received PropertyDetailsDto for update: " + propertyDetailsDto);
 
-		PropertyDetails existingProperty = propertyDetailsRepository.findById(loanApplicationid).orElse(null);
+		if (loanApplicationId == null || propertyDetailsDto == null) {
+			System.out.println("Invalid input: loanApplicationId or propertyDetailsDto is null");
+			return null;
+		}
 
-		if (existingProperty != null) {
-			System.out.println("Existing Property before update: " + existingProperty);
+		PropertyDetails existingProperty = propertyDetailsRepository.findById(loanApplicationId).orElse(null);
 
+		if (existingProperty == null) {
+			System.out.println("No property found with id: " + loanApplicationId);
+			return null;
+		}
+
+		// Update fields individually to ensure safe mapping
+		if (propertyDetailsDto.getApprovalAuthority() != null)
 			existingProperty.setApprovalAuthority(propertyDetailsDto.getApprovalAuthority());
+
+		if (propertyDetailsDto.getAreaName() != null)
 			existingProperty.setAreaName(propertyDetailsDto.getAreaName());
+
+		if (propertyDetailsDto.getBuilderName() != null)
 			existingProperty.setBuilderName(propertyDetailsDto.getBuilderName());
+
+		if (propertyDetailsDto.getCarpetArea() != null)
 			existingProperty.setCarpetArea(propertyDetailsDto.getCarpetArea());
+
+		if (propertyDetailsDto.getCity() != null)
 			existingProperty.setCity(propertyDetailsDto.getCity());
+
+		if (propertyDetailsDto.getConstructionStatus() != null)
 			existingProperty.setConstructionStatus(propertyDetailsDto.getConstructionStatus());
+
+		if (propertyDetailsDto.getDistrict() != null)
 			existingProperty.setDistrict(propertyDetailsDto.getDistrict());
+
+		if (propertyDetailsDto.getIsUnderDispute() != null)
 			existingProperty.setIsUnderDispute(propertyDetailsDto.getIsUnderDispute());
+
+		if (propertyDetailsDto.getLandSurveyNumber() != null)
 			existingProperty.setLandSurveyNumber(propertyDetailsDto.getLandSurveyNumber());
+
+		if (propertyDetailsDto.getOwnershipType() != null)
 			existingProperty.setOwnershipType(propertyDetailsDto.getOwnershipType());
+
+		if (propertyDetailsDto.getPincode() != null)
 			existingProperty.setPincode(propertyDetailsDto.getPincode());
+
+		if (propertyDetailsDto.getProjectName() != null)
 			existingProperty.setProjectName(propertyDetailsDto.getProjectName());
+
+		if (propertyDetailsDto.getPropertyAddress() != null)
 			existingProperty.setPropertyAddress(propertyDetailsDto.getPropertyAddress());
+
+		if (propertyDetailsDto.getPropertyRegistrationNumber() != null)
 			existingProperty.setPropertyRegistrationNumber(propertyDetailsDto.getPropertyRegistrationNumber());
+
+		if (propertyDetailsDto.getPropertyType() != null)
 			existingProperty.setPropertyType(propertyDetailsDto.getPropertyType());
+
+		if (propertyDetailsDto.getPropertyValue() != null)
 			existingProperty.setPropertyValue(propertyDetailsDto.getPropertyValue());
+
+		if (propertyDetailsDto.getRemarks() != null)
 			existingProperty.setRemarks(propertyDetailsDto.getRemarks());
+
+		if (propertyDetailsDto.getState() != null)
 			existingProperty.setState(propertyDetailsDto.getState());
 
-			System.out.println("Updated Property: " + existingProperty);
+		if (propertyDetailsDto.getConstructionPercentage() != null)
+			existingProperty.setConstructionPercentage(propertyDetailsDto.getConstructionPercentage());
+		
+		if (propertyDetailsDto.getCustomerId() != null)
+			existingProperty.setCustomerId(propertyDetailsDto.getCustomerId());
 
-			PropertyDetails saved = propertyDetailsRepository.save(existingProperty);
+		System.out.println("Updated Property: " + existingProperty);
 
-			System.out.println("Saved PropertyDetails: " + saved);
+		PropertyDetails saved = propertyDetailsRepository.save(existingProperty);
 
-			return modelMapper.map(saved, PropertyDetailsDto.class);
-		} else {
-			System.out.println("No property found with id: " + loanApplicationid);
-			return propertyDetailsDto;
-		}
+		System.out.println("Saved PropertyDetails: " + saved);
+
+		return modelMapper.map(saved, PropertyDetailsDto.class);
 	}
-
 	@Override
 	public void deletePropertyDetails(Integer loanApplicationid) {
 		PropertyDetails existingProperty = propertyDetailsRepository.findById(loanApplicationid).orElse(null);
